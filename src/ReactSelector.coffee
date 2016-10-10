@@ -76,7 +76,7 @@ ReactSelector = React.createClass
     #
     componentDidUpdate: ->
         if @refs.active
-            @refs.active.getDOMNode().scrollIntoView(false)
+            @refs.active.scrollIntoView(false)
 
 
     #
@@ -128,7 +128,10 @@ ReactSelector = React.createClass
                 React.DOM.div({
                         ref: "active" if is_active_item
                         key: item.id
-                        onClick: @_onItemToggle.bind(null, item)
+                        onClick: ((_item) => (e) =>
+                            e.stopPropagation()
+                            @_onItemToggle(_item)
+                        )(item)
                         className: item_class_name
                     },
                     item_component
@@ -147,7 +150,7 @@ ReactSelector = React.createClass
         item.onToggle(item.id)
         clearTimeout(@_timeout) # to avoid hidding the filter list while
                                 # input loses focus
-        input = @refs.input.getDOMNode()
+        input = @refs.input
         input.focus()
 
 
@@ -225,7 +228,7 @@ ReactSelector = React.createClass
         @_timeout = setTimeout ( =>
             @props.onBlur() if @props.onBlur
             @setState { show_filtered_items: false }
-        ), 0
+        ), 100
 
     #
     #
@@ -239,7 +242,9 @@ ReactSelector = React.createClass
                 React.DOM.div {className: "container"},
                     filtered_items
 
-        React.DOM.div {},
+        containerClicked = (e) => @refs.input.focus()
+
+        React.DOM.div {onClick: containerClicked},
             if @state.show_filtered_items && @state.filtered_items_on_top
                 filtered_items_section
 
