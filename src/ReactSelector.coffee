@@ -9,6 +9,7 @@
 #   - @universe:                            An array with all the items we can select from
 #   - @selected:                            An array with the selected items.
 #   - @compare:                             A compare function that is used to order items.
+#   - @onItemNotInUniverse: (Optional)      A function that will be called when the entered item is not present in the universe.
 #
 # # Anathomy of an item.
 #   universe and selected array must be populated with `items` that respect
@@ -177,6 +178,10 @@ ReactSelector = React.createClass
         else if key == ENTER
             active_item = filtered[active_item_index]
             @_onItemToggle(active_item) if active_item
+
+            if !active_item && @props.onItemNotInUniverse
+                @props.onItemNotInUniverse(@state.query)
+
             event.preventDefault()
 
         else if key == BACKSPACE && @state.query == '' && selected.length > 0
